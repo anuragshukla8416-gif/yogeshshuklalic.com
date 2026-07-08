@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mutual Fund | Yogesh Shukla Advisory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-crest">YS</div>
+      <div><div class="brand-name">Yogesh Shukla</div><div class="brand-tag">MDRT Member · Mutual Fund Desk</div></div>
+    </div>
+    <div class="session-pill"><span id="sessionContact">—</span><span class="lo" onclick="logout()">Sign Out</span></div>
+  </div>
+  <div class="breadcrumb"><a href="index.html">← Back to Advisory Home</a> / Section III / Mutual Fund</div>
+
+  <div class="section-heading">
+    <div class="eyebrow">Section III</div>
+    <h2>Mutual Fund — Choose Your Category</h2>
+    <p>Select the fund category that fits your goal, then tell us your investment plan. Fund exploration and official scheme documents are sourced from <a href="https://www.etmoney.com/mutual-funds/all-funds-listing" target="_blank" rel="noopener" style="color:var(--gold-bright)">etmoney.com</a>.</p>
+  </div>
+
+  <div class="chip-grid" id="subtypeGrid"></div>
+
+  <div id="intakeSection" class="hidden">
+    <div class="intake-panel glass">
+      <div class="section-heading" style="margin-bottom:18px;">
+        <div class="eyebrow">Your Plan</div>
+        <h2 id="intakeTitle" style="font-size:22px;">Tell us your investment details</h2>
+      </div>
+      <div class="intake-grid">
+        <div>
+          <span class="field-label">Investment Amount (₹)</span>
+          <input class="lux-input" id="amountInput" type="number" min="0" placeholder="e.g. 500000">
+        </div>
+        <div>
+          <span class="field-label">Investment Horizon (Years)</span>
+          <input class="lux-input" id="tenureInput" type="number" min="1" max="40" placeholder="e.g. 10">
+        </div>
+        <div>
+          <span class="field-label">Contribution Frequency</span>
+          <div class="freq-toggle" id="freqToggle">
+            <button class="active" data-freq="Monthly" onclick="setFrequency('Monthly')">Monthly (SIP)</button>
+            <button data-freq="Quarterly" onclick="setFrequency('Quarterly')">Quarterly</button>
+            <button data-freq="Yearly" onclick="setFrequency('Yearly')">Yearly / Lumpsum</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="findPlans()">Show Matching Fund Categories</button>
+    </div>
+  </div>
+
+  <div id="plansSection" class="hidden">
+    <div class="section-heading">
+      <div class="eyebrow" id="resultsEyebrow">Matching Categories</div>
+      <h2 id="resultsTitle">—</h2>
+      <p style="margin-top:6px;">These are fund <b>categories</b>, not specific scheme recommendations. Mr. Shukla will help you shortlist the actual fund and AMC after reviewing your goals.</p>
+    </div>
+    <div class="plans-grid" id="plansGrid"></div>
+  </div>
+
+  <div class="site-footer">
+    <div>© <span id="yearNow"></span> Yogesh Shukla Wealth Advisory</div>
+    <div>71 Atindra Mukherjee Lane, Shibpur, Howrah, West Bengal</div>
+    <div style="margin-top:6px;">Mutual Fund investments are subject to market risk. Please read all scheme-related documents carefully before investing.</div>
+  </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/common.js"></script>
+<script>
+document.getElementById('yearNow').textContent = new Date().getFullYear();
+requireSession();
+
+const BROCHURE_URL = "https://www.etmoney.com/mutual-funds/all-funds-listing";
+const CATEGORIES = {
+  equity:  { label:"Equity Funds", sub:"Long-Term Wealth Growth", icon:"📈" },
+  debt:    { label:"Debt Funds", sub:"Stability &amp; Capital Preservation", icon:"🏦" },
+  hybrid:  { label:"Hybrid Funds", sub:"Balanced Growth &amp; Safety", icon:"⚖" },
+  taxsave: { label:"Tax Saving (ELSS)", sub:"80C Benefit + Growth", icon:"🧾" },
+};
+const PLANS = [
+  { name:"Large Cap Equity Fund", cat:"equity" },
+  { name:"Flexi Cap Equity Fund", cat:"equity" },
+  { name:"Mid Cap Equity Fund", cat:"equity" },
+  { name:"Small Cap Equity Fund", cat:"equity" },
+  { name:"Nifty 50 Index Fund", cat:"equity" },
+  { name:"Corporate Bond Fund", cat:"debt" },
+  { name:"Short Duration Debt Fund", cat:"debt" },
+  { name:"Liquid Fund", cat:"debt" },
+  { name:"Gilt Fund", cat:"debt" },
+  { name:"Balanced Advantage Fund", cat:"hybrid" },
+  { name:"Aggressive Hybrid Fund", cat:"hybrid" },
+  { name:"Multi Asset Allocation Fund", cat:"hybrid" },
+  { name:"ELSS Tax Saver Fund", cat:"taxsave" },
+];
+
+let activeCat = null;
+let frequency = 'Monthly';
+
+function renderChips(){
+  const grid = document.getElementById('subtypeGrid');
+  grid.innerHTML = '';
+  Object.entries(CATEGORIES).forEach(([key, c])=>{
+    const count = PLANS.filter(p=>p.cat===key).length;
+    const chip = document.createElement('div');
+    chip.className = 'chip glass';
+    chip.onclick = ()=> selectSubtype(key);
+    chip.innerHTML = `<span class="icon">${c.icon}</span><h4>${c.label}</h4><p>${c.sub} · ${count} categories</p>`;
+    grid.appendChild(chip);
+  });
+}
+function selectSubtype(key){
+  activeCat = key;
+  document.querySelectorAll('.chip').forEach((el,i)=> el.classList.toggle('active', Object.keys(CATEGORIES)[i]===key));
+  document.getElementById('intakeTitle').textContent = `Tell us your investment details — ${CATEGORIES[key].label}`;
+  document.getElementById('intakeSection').classList.remove('hidden');
+  document.getElementById('plansSection').classList.add('hidden');
+  document.getElementById('intakeSection').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function setFrequency(f){
+  frequency = f;
+  document.querySelectorAll('#freqToggle button').forEach(b=> b.classList.toggle('active', b.dataset.freq===f));
+}
+function findPlans(){
+  const amount = document.getElementById('amountInput').value;
+  const tenure = document.getElementById('tenureInput').value;
+  if(!amount || Number(amount) <= 0){ toast('error', 'Amount Required', 'Please enter your intended investment amount.'); return; }
+  if(!tenure || Number(tenure) <= 0){ toast('error', 'Horizon Required', 'Please enter your investment horizon in years.'); return; }
+  renderPlans(activeCat, amount, tenure, frequency);
+}
+function renderPlans(cat, amount, tenure, freq){
+  const list = PLANS.filter(p=>p.cat===cat);
+  document.getElementById('resultsEyebrow').textContent = CATEGORIES[cat].label + ' — Matching Categories';
+  document.getElementById('resultsTitle').textContent = `${list.length} categories for ₹${Number(amount).toLocaleString('en-IN')} over ${tenure} years (${freq})`;
+  const grid = document.getElementById('plansGrid');
+  grid.innerHTML = '';
+  document.getElementById('plansSection').classList.remove('hidden');
+  list.forEach((p,i)=>{
+    const card = document.createElement('div');
+    card.className = 'plan-card glass';
+    card.style.animationDelay = (i*0.05)+'s';
+    card.innerHTML = `
+      <h4>${p.name}</h4>
+      <div class="plan-cat">${CATEGORIES[cat].label}</div>
+      <div class="plan-inputs-echo">₹${Number(amount).toLocaleString('en-IN')} · ${tenure} yrs · ${freq}</div>
+      <div class="plan-actions">
+        <button class="btn btn-primary" onclick='requestQuote(${JSON.stringify(p.name)}, ${JSON.stringify(CATEGORIES[cat].label)}, ${JSON.stringify(amount)}, ${JSON.stringify(tenure)}, ${JSON.stringify(freq)})'>Request Quote</button>
+        <a class="brochure-link" href="${BROCHURE_URL}" target="_blank" rel="noopener" onclick='trackBrochure(${JSON.stringify(p.name)}, ${JSON.stringify(CATEGORIES[cat].label)}, ${JSON.stringify(amount)}, ${JSON.stringify(tenure)}, ${JSON.stringify(freq)})'>Explore Funds ↗</a>
+      </div>`;
+    grid.appendChild(card);
+  });
+  document.getElementById('plansSection').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function baseDetails(name, cat, amount, tenure, freq){
+  return { vertical:'Mutual Fund', category:cat, planNo:'—', planName:name, investAmount:amount, tenure, frequency:freq };
+}
+function requestQuote(name, cat, amount, tenure, freq){ openQuoteModal(baseDetails(name,cat,amount,tenure,freq)); }
+function trackBrochure(name, cat, amount, tenure, freq){ logBrochureClick(baseDetails(name,cat,amount,tenure,freq)); }
+
+renderChips();
+</script>
+</body>
+</html>

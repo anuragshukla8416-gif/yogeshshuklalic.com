@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yogesh Shukla | Wealth &amp; Insurance Advisory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+#authScreen{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:32px 18px; position:relative; }
+#authScreen::before{ content:""; position:absolute; inset:0;
+  background-image:linear-gradient(rgba(201,168,106,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,106,0.035) 1px, transparent 1px);
+  background-size:64px 64px; mask-image:radial-gradient(ellipse at center, black 0%, transparent 70%); pointer-events:none; }
+.auth-card{ width:100%; max-width:440px; padding:44px 38px 36px; position:relative; z-index:1; }
+.crest{ width:56px;height:56px;margin:0 auto 18px; border-radius:50%; border:1px solid var(--hairline);
+  display:flex;align-items:center;justify-content:center; font-family:var(--serif); font-size:22px; color:var(--gold-bright); font-weight:600;
+  background:linear-gradient(160deg, rgba(201,168,106,0.14), rgba(31,122,92,0.08)); }
+.auth-eyebrow{ text-align:center; letter-spacing:3px; text-transform:uppercase; font-size:11px; color:var(--emerald-bright); font-weight:600; margin-bottom:6px; }
+.auth-title{ font-family:var(--serif); text-align:center; font-size:30px; font-weight:600; color:var(--ivory); margin:0 0 6px; }
+.auth-sub{ text-align:center; color:var(--muted); font-size:13.5px; margin:0 0 30px; line-height:1.5; }
+.channel-toggle{ display:flex; background:rgba(255,255,255,0.03); border:1px solid var(--hairline); border-radius:999px; padding:4px; margin-bottom:20px; }
+.channel-toggle button{ flex:1; border:none; background:transparent; color:var(--muted); padding:9px 0; border-radius:999px; font-family:var(--sans); font-size:13px; font-weight:600; cursor:pointer; transition:all .25s ease; }
+.channel-toggle button.active{ background:linear-gradient(135deg, var(--gold-dim), var(--gold)); color:#12100a; }
+.input-wrap{ position:relative; margin-bottom:18px; }
+.otp-row{ display:flex; gap:9px; margin-bottom:8px; justify-content:space-between; }
+.otp-box{ width:100%; aspect-ratio:1/1; text-align:center; font-size:22px; font-family:var(--mono);
+  background:rgba(255,255,255,0.03); border:1px solid var(--hairline); border-radius:10px; color:var(--gold-bright); outline:none; }
+.otp-box:focus{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,106,0.12); }
+.resend-row{ display:flex; justify-content:space-between; align-items:center; margin:16px 0 22px; font-size:12.5px; color:var(--muted); }
+.resend-row button{ background:none; border:none; color:var(--gold-bright); font-weight:700; cursor:pointer; font-family:var(--sans); font-size:12.5px; padding:0; }
+.resend-row button:disabled{ color:var(--muted-2); cursor:not-allowed; }
+.back-link{ display:block; text-align:center; margin-top:16px; font-size:12.5px; color:var(--muted); cursor:pointer; background:none; border:none; width:100%; font-family:var(--sans); }
+.back-link:hover{ color:var(--gold-bright); }
+.trust-strip{ display:flex; justify-content:center; gap:22px; margin-top:30px; padding-top:22px; border-top:1px solid var(--hairline); }
+.trust-strip .t{ text-align:center; }
+.trust-strip .t b{ display:block; font-family:var(--serif); font-size:18px; color:var(--gold-bright); }
+.trust-strip .t span{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
+
+.credibility{ display:grid; grid-template-columns:1.1fr 1.5fr; gap:0; margin-bottom:44px; overflow:hidden; position:relative; }
+.plaque{ padding:38px 34px; border-right:1px solid var(--hairline); display:flex; flex-direction:column; justify-content:center;
+  background:radial-gradient(circle at 20% 20%, rgba(31,122,92,0.10), transparent 60%); }
+.plaque .eyebrow{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--emerald-bright); font-weight:700; margin-bottom:10px; }
+.plaque .fund-figure{ font-family:var(--serif); font-size:52px; font-weight:600; color:var(--gold-bright); line-height:1; margin-bottom:6px; letter-spacing:-1px; }
+.plaque .fund-sub{ color:var(--muted); font-size:13.5px; margin-bottom:22px; }
+.plaque .stat-grid{ display:flex; gap:24px; }
+.plaque .stat b{ font-family:var(--mono); font-size:19px; color:var(--ivory); display:block; }
+.plaque .stat span{ font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
+.ledger{ padding:30px 32px; }
+.ledger .eyebrow{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:14px; }
+.ledger-table{ width:100%; border-collapse:collapse; }
+.ledger-table th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted-2); font-weight:600; padding:0 0 10px; border-bottom:1px solid var(--hairline); }
+.ledger-table td{ padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:13px; color:var(--ivory); }
+.ledger-table tr:last-child td{ border-bottom:none; }
+.stamp{ display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10.5px; color:var(--emerald-bright);
+  border:1px solid var(--emerald-dim); padding:3px 9px; border-radius:999px; letter-spacing:.5px; background:rgba(63,207,156,0.06); }
+.stamp::before{ content:"✓"; }
+.ledger-note{ font-size:10.5px; color:var(--muted-2); margin-top:14px; line-height:1.5; }
+.location-line{ font-size:13px; color:var(--muted); }
+.hero-strip{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:34px; }
+
+.vertical-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:18px; margin-bottom:20px; }
+.vertical-card{ padding:28px 24px; text-decoration:none; display:block; color:var(--ivory); transition:transform .25s ease, border-color .25s ease; position:relative; }
+.vertical-card:hover{ transform:translateY(-4px); border-color:rgba(201,168,106,0.4); }
+.vertical-card .numeral{ font-family:var(--serif); font-size:15px; color:var(--gold-dim); margin-bottom:14px; letter-spacing:1px; }
+.vertical-card .icon{ font-size:28px; margin-bottom:12px; display:block; }
+.vertical-card h3{ font-family:var(--serif); font-size:20px; font-weight:600; margin:0 0 8px; }
+.vertical-card p{ font-size:12.5px; color:var(--muted); margin:0 0 14px; line-height:1.5; min-height:36px; }
+.vertical-card .go{ font-size:11px; color:var(--emerald-bright); font-weight:700; letter-spacing:.4px; border-top:1px solid var(--hairline); padding-top:12px; display:flex; justify-content:space-between; }
+.vertical-card .go .ext{ color:var(--gold-bright); }
+
+#adminPinOverlay .pin-box{ width:100%; max-width:360px; padding:36px 30px; text-align:center; }
+#adminPinOverlay .pin-box h3{ font-family:var(--serif); font-size:22px; margin:0 0 6px; }
+#adminPinOverlay .pin-box p{ color:var(--muted); font-size:12.5px; margin:0 0 20px; }
+#adminOverlay{ position:fixed; inset:0; background:rgba(4,5,6,0.88); z-index:2000; overflow-y:auto; padding:40px 20px; }
+.admin-shell{ max-width:1100px; margin:0 auto; }
+.admin-topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; flex-wrap:wrap; gap:14px;}
+.admin-topbar h2{ font-family:var(--serif); font-size:26px; margin:0; }
+.admin-topbar .sub{ color:var(--muted); font-size:12.5px; }
+.admin-stats{ display:flex; gap:14px; margin-bottom:24px; flex-wrap:wrap; }
+.admin-stat{ padding:16px 22px; min-width:130px; }
+.admin-stat b{ font-family:var(--serif); font-size:26px; color:var(--gold-bright); display:block; }
+.admin-stat span{ font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); }
+.admin-table-wrap{ overflow-x:auto; padding:8px; }
+table.admin-table{ width:100%; border-collapse:collapse; min-width:1100px; }
+table.admin-table th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--gold); padding:12px 14px; border-bottom:1px solid var(--hairline); position:sticky; top:0; background:var(--panel); }
+table.admin-table td{ padding:13px 14px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12px; color:var(--ivory); }
+.tag{ padding:3px 10px; border-radius:999px; font-size:10.5px; font-weight:700; letter-spacing:.3px; }
+.tag-quote{ background:rgba(63,207,156,0.1); color:var(--emerald-bright); border:1px solid var(--emerald-dim); }
+.tag-brochure{ background:rgba(201,168,106,0.1); color:var(--gold-bright); border:1px solid var(--gold-dim); }
+select.status-select{ background:rgba(255,255,255,0.04); color:var(--ivory); border:1px solid var(--hairline); border-radius:8px; padding:7px 10px; font-family:var(--sans); font-size:12px; outline:none; cursor:pointer; }
+.admin-close{ position:fixed; top:26px; right:30px; background:none; border:1px solid var(--hairline); color:var(--muted); width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:16px; }
+.admin-close:hover{ color:var(--gold-bright); border-color:var(--gold-dim); }
+.admin-empty{ text-align:center; padding:60px 20px; color:var(--muted); }
+.admin-toolbar{ display:flex; justify-content:flex-end; gap:10px; margin-bottom:16px; }
+.admin-toolbar button{ font-size:11.5px; padding:9px 16px; border-radius:8px; border:1px solid var(--hairline); background:none; color:var(--muted); cursor:pointer; }
+.admin-toolbar button:hover{ color:var(--danger); border-color:var(--danger); }
+
+@media (max-width: 860px){ .credibility{ grid-template-columns:1fr; } .plaque{ border-right:none; border-bottom:1px solid var(--hairline); } .vertical-grid{ grid-template-columns:repeat(2, 1fr); } }
+@media (max-width: 560px){ .vertical-grid{ grid-template-columns:1fr; } .auth-card{ padding:34px 22px 28px; } }
+</style>
+</head>
+<body>
+
+<div id="authScreen">
+  <div class="auth-card glass">
+    <div class="crest">YS</div>
+    <div class="auth-eyebrow">Private Client Access</div>
+    <h1 class="auth-title">Secure Advisory Portal</h1>
+    <p class="auth-sub">Verified access for clients of Yogesh Shukla — Life &amp; Health Insurance, Mutual Funds and Motor Insurance advisory.</p>
+
+    <div id="stepRequest">
+      <span class="field-label">Verify via</span>
+      <div class="channel-toggle">
+        <button id="chMobile" class="active" onclick="setChannel('mobile')">Mobile Number</button>
+        <button id="chEmail" onclick="setChannel('email')">Email Address</button>
+      </div>
+      <div class="input-wrap">
+        <input class="lux-input" id="contactInput" type="text" placeholder="Enter 10-digit mobile number" autocomplete="off">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="requestOtp()">Send Secure OTP</button>
+      <div class="trust-strip">
+        <div class="t"><b>₹43.8+ Cr</b><span>Life Fund AUM</span></div>
+        <div class="t"><b>MDRT</b><span>Member</span></div>
+        <div class="t"><b>4</b><span>Advisory Lines</span></div>
+      </div>
+    </div>
+
+    <div id="stepVerify" class="hidden">
+      <span class="field-label">Enter the 6-digit code sent to <span id="otpDestination" style="color:var(--gold-bright)"></span></span>
+      <div class="otp-row" id="otpRow">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+        <input class="otp-box" maxlength="1" inputmode="numeric">
+      </div>
+      <div class="resend-row">
+        <span id="resendLabel">Resend code in <b id="countdownVal">30</b>s</span>
+        <button id="resendBtn" disabled onclick="requestOtp(true)">Resend Code</button>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="verifyOtp()">Verify &amp; Enter Portal</button>
+      <button class="back-link" onclick="backToRequest()">← Use a different number or email</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-crest">YS</div>
+      <div>
+        <div class="brand-name">Yogesh Shukla</div>
+        <div class="brand-tag">MDRT Member · Adding More To Life</div>
+      </div>
+    </div>
+    <div class="session-pill">
+      <span id="sessionContact">—</span>
+      <span class="lo" onclick="logout()">Sign Out</span>
+    </div>
+  </div>
+
+  <div class="hero-strip">
+    <span class="badge">★ MDRT — Million Dollar Round Table</span>
+    <span class="badge em">✓ Life · Health · Mutual Fund · Motor</span>
+    <span class="location-line">71 Atindra Mukherjee Lane, Shibpur, Howrah, West Bengal</span>
+  </div>
+
+  <div class="credibility glass">
+    <div class="plaque">
+      <div class="eyebrow">Assets Under Advisory</div>
+      <div class="fund-figure">₹43.8+ Cr</div>
+      <div class="fund-sub">Cumulative Life Fund secured for client families across active LIC portfolios.</div>
+      <div class="stat-grid">
+        <div class="stat"><b>340+</b><span>Policies Serviced</span></div>
+        <div class="stat"><b>19 Yrs</b><span>Advisory Tenure</span></div>
+        <div class="stat"><b>Zero</b><span>Disputed Claims</span></div>
+      </div>
+    </div>
+    <div class="ledger">
+      <div class="eyebrow">Verified Maturity Disbursals</div>
+      <table class="ledger-table">
+        <thead><tr><th>Category</th><th>Sum Disbursed</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Endowment Maturity — Jeevan Labh</td><td>₹11,20,000</td><td><span class="stamp">Verified</span></td></tr>
+          <tr><td>Whole Life Payout — Jeevan Umang</td><td>₹8,45,000</td><td><span class="stamp">Verified</span></td></tr>
+          <tr><td>Term Claim Settlement</td><td>₹50,00,000</td><td><span class="stamp">Verified</span></td></tr>
+          <tr><td>Health Claim Reimbursement</td><td>₹2,80,000</td><td><span class="stamp">Verified</span></td></tr>
+        </tbody>
+      </table>
+      <div class="ledger-note">Illustrative record of past disbursal categories. Figures to be reconciled with Mr. Shukla's verified client register before public display.</div>
+    </div>
+  </div>
+
+  <div class="section-heading">
+    <div class="eyebrow">Choose Your Advisory Line</div>
+    <h2>What would you like to explore today?</h2>
+    <p>Each selection opens a dedicated planning desk in a new tab — pick your sub-type, tell us your investment amount, tenure and payment preference, and we'll surface matching plans with a direct link to the official brochure.</p>
+  </div>
+
+  <div class="vertical-grid">
+    <a class="vertical-card glass" href="life-insurance.html" target="_blank" rel="noopener">
+      <div class="numeral">Section I</div>
+      <span class="icon">🛡</span>
+      <h3>Life Insurance</h3>
+      <p>Term, whole life, endowment &amp; ULIP plans from LIC.</p>
+      <div class="go"><span>Explore Plans</span><span class="ext">↗ New Tab</span></div>
+    </a>
+    <a class="vertical-card glass" href="health-insurance.html" target="_blank" rel="noopener">
+      <div class="numeral">Section II</div>
+      <span class="icon">➕</span>
+      <h3>Health Insurance</h3>
+      <p>Individual, family floater &amp; senior citizen health cover.</p>
+      <div class="go"><span>Explore Plans</span><span class="ext">↗ New Tab</span></div>
+    </a>
+    <a class="vertical-card glass" href="mutual-fund.html" target="_blank" rel="noopener">
+      <div class="numeral">Section III</div>
+      <span class="icon">📈</span>
+      <h3>Mutual Fund</h3>
+      <p>Equity, debt, hybrid &amp; tax-saving fund categories.</p>
+      <div class="go"><span>Explore Plans</span><span class="ext">↗ New Tab</span></div>
+    </a>
+    <a class="vertical-card glass" href="motor-insurance.html" target="_blank" rel="noopener">
+      <div class="numeral">Section IV</div>
+      <span class="icon">🚗</span>
+      <h3>Motor Insurance</h3>
+      <p>Private car, two-wheeler &amp; commercial vehicle cover.</p>
+      <div class="go"><span>Explore Plans</span><span class="ext">↗ New Tab</span></div>
+    </a>
+  </div>
+
+  <div class="site-footer">
+    <div>© <span id="yearNow"></span> Yogesh Shukla Wealth Advisory · IRDAI-compliant intermediary services</div>
+    <div>71 Atindra Mukherjee Lane, Shibpur, Howrah, West Bengal · <span class="admin-trigger" onclick="adminClicks()">MDRT Certified Advisor</span></div>
+  </div>
+</div>
+
+<div id="adminPinOverlay" class="modal-overlay hidden">
+  <div class="pin-box glass">
+    <h3>Administrative Workspace</h3>
+    <p>Enter the advisor access PIN to view the lead ledger.</p>
+    <div class="input-wrap">
+      <input class="lux-input" id="adminPinInput" type="password" placeholder="Access PIN" style="text-align:center;letter-spacing:4px;">
+    </div>
+    <button class="btn btn-gold btn-block" onclick="checkAdminPin()">Unlock Workspace</button>
+    <button class="back-link" onclick="closeAdminPin()">Cancel</button>
+  </div>
+</div>
+
+<div id="adminOverlay" class="hidden">
+  <button class="admin-close" onclick="closeAdmin()">✕</button>
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div><h2>Administrative Workspace</h2><div class="sub">Lead capture ledger across all four verticals · persisted locally on this device</div></div>
+    </div>
+    <div class="admin-stats" id="adminStats"></div>
+    <div class="admin-toolbar">
+      <button onclick="exportLedger()">Export CSV</button>
+      <button onclick="clearLedgerUI()">Clear All Records</button>
+    </div>
+    <div class="glass admin-table-wrap">
+      <table class="admin-table" id="adminTable">
+        <thead><tr><th>Timestamp</th><th>Contact</th><th>Vertical</th><th>Category</th><th>Plan</th><th>Investment</th><th>Action</th><th>Status</th></tr></thead>
+        <tbody id="adminTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/common.js"></script>
+<script>
+let channel = 'mobile';
+let pendingContact = null;
+let countdownTimer = null;
+
+function setChannel(c){
+  channel = c;
+  document.getElementById('chMobile').classList.toggle('active', c==='mobile');
+  document.getElementById('chEmail').classList.toggle('active', c==='email');
+  const input = document.getElementById('contactInput');
+  input.placeholder = c==='mobile' ? 'Enter 10-digit mobile number' : 'Enter your email address';
+  input.value = '';
+}
+function validateContact(value){
+  if(channel === 'mobile') return /^[6-9]\d{9}$/.test(value.trim());
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+async function requestOtp(isResend){
+  const input = document.getElementById('contactInput');
+  const value = isResend ? pendingContact : input.value.trim();
+  if(!isResend){
+    if(!value){ toast('error', 'Contact Required', `Please enter your ${channel === 'mobile' ? 'mobile number' : 'email address'} to continue.`); return; }
+    if(!validateContact(value)){ toast('error', 'Invalid Format', channel === 'mobile' ? 'Enter a valid 10-digit Indian mobile number.' : 'Enter a valid email address.'); return; }
+    pendingContact = value;
+  }
+
+  const btn = isResend ? document.getElementById('resendBtn') : document.querySelector('#stepRequest .btn-primary');
+  if(btn){ btn.disabled = true; }
+
+  try{
+    const resp = await apiRequestOtp(pendingContact, channel);
+
+    document.getElementById('stepRequest').classList.add('hidden');
+    document.getElementById('stepVerify').classList.remove('hidden');
+    document.getElementById('otpDestination').textContent = maskContact(pendingContact, channel);
+    document.querySelectorAll('.otp-box').forEach(b => b.value = '');
+    document.querySelector('.otp-box').focus();
+
+    if(resp.devMode){
+      toast('info', isResend ? 'OTP Resent' : 'OTP Sent Securely',
+        `Dispatched to your ${channel === 'mobile' ? 'mobile' : 'email'}. Demo environment — no live SMS/email gateway connected, so your code is shown below.`,
+        resp.devCode);
+    }else{
+      toast('success', isResend ? 'OTP Resent' : 'OTP Sent Securely',
+        `A one-time password has been dispatched to your ${channel === 'mobile' ? 'mobile' : 'email'}.`);
+    }
+    startCountdown();
+  }catch(err){
+    toast('error', 'Could Not Send OTP', err.message || 'Please try again in a moment.');
+  }finally{
+    if(btn && !isResend){ btn.disabled = false; }
+  }
+}
+function startCountdown(){
+  let secs = 30;
+  const resendBtn = document.getElementById('resendBtn');
+  const label = document.getElementById('resendLabel');
+  const val = document.getElementById('countdownVal');
+  resendBtn.disabled = true; label.classList.remove('hidden'); val.textContent = secs;
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(()=>{
+    secs--; val.textContent = secs;
+    if(secs <= 0){ clearInterval(countdownTimer); resendBtn.disabled = false; label.classList.add('hidden'); }
+  }, 1000);
+}
+document.addEventListener('input', (e)=>{
+  if(e.target.classList.contains('otp-box')){
+    e.target.value = e.target.value.replace(/\D/g,'');
+    if(e.target.value && e.target.nextElementSibling && e.target.nextElementSibling.classList.contains('otp-box')) e.target.nextElementSibling.focus();
+  }
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.target.classList.contains('otp-box') && e.key === 'Backspace' && !e.target.value){
+    const prev = e.target.previousElementSibling;
+    if(prev && prev.classList.contains('otp-box')) prev.focus();
+  }
+});
+async function verifyOtp(){
+  const boxes = document.querySelectorAll('.otp-box');
+  const entered = Array.from(boxes).map(b=>b.value).join('');
+  if(entered.length < 6){ toast('error', 'Incomplete Code', 'Please enter all 6 digits of your OTP.'); return; }
+
+  const verifyBtn = document.querySelector('#stepVerify .btn-primary');
+  if(verifyBtn){ verifyBtn.disabled = true; verifyBtn.textContent = 'Verifying…'; }
+
+  try{
+    const resp = await apiVerifyOtp(pendingContact, channel, entered);
+    setSession({ contact: resp.contact, channel: resp.channel, token: resp.token, loginTime: new Date().toISOString() });
+    toast('success', 'Access Granted', 'Welcome to your private advisory portal.');
+    enterApp();
+  }catch(err){
+    toast('error', 'Verification Failed', err.message || 'The code entered does not match. Please try again or resend.');
+  }finally{
+    if(verifyBtn){ verifyBtn.disabled = false; verifyBtn.textContent = 'Verify & Enter Portal'; }
+  }
+}
+function backToRequest(){
+  clearInterval(countdownTimer);
+  document.getElementById('stepVerify').classList.add('hidden');
+  document.getElementById('stepRequest').classList.remove('hidden');
+}
+function enterApp(){
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('yearNow').textContent = new Date().getFullYear();
+  paintSessionPill();
+}
+window.addEventListener('DOMContentLoaded', ()=>{
+  const session = getSession();
+  if(session && session.contact) enterApp();
+});
+
+let adminClickCount = 0, adminClickTimer = null;
+function adminClicks(){
+  adminClickCount++;
+  clearTimeout(adminClickTimer);
+  adminClickTimer = setTimeout(()=> adminClickCount = 0, 900);
+  if(adminClickCount >= 3){
+    adminClickCount = 0;
+    document.getElementById('adminPinOverlay').classList.remove('hidden');
+    document.getElementById('adminPinInput').value = '';
+    setTimeout(()=>document.getElementById('adminPinInput').focus(), 100);
+  }
+}
+function closeAdminPin(){ document.getElementById('adminPinOverlay').classList.add('hidden'); }
+async function checkAdminPin(){
+  const val = document.getElementById('adminPinInput').value.trim();
+  try{
+    await adminLogin(val);
+    closeAdminPin();
+    openAdmin();
+  }catch(err){
+    toast('error', 'Access Denied', err.message || 'Incorrect advisor PIN.');
+  }
+}
+function openAdmin(){ document.getElementById('adminOverlay').classList.remove('hidden'); renderAdmin(); }
+function closeAdmin(){ document.getElementById('adminOverlay').classList.add('hidden'); adminLogoutApi(); }
+
+async function renderAdmin(){
+  const body = document.getElementById('adminTableBody');
+  body.innerHTML = `<tr><td colspan="8"><div class="admin-empty">Loading ledger…</div></td></tr>`;
+  let data;
+  try{
+    data = await fetchAdminLeads();
+  }catch(err){
+    body.innerHTML = `<tr><td colspan="8"><div class="admin-empty">Could not load the ledger: ${err.message || 'unknown error'}</div></td></tr>`;
+    return;
+  }
+  const ledger = data.leads;
+  const stats = data.stats;
+  const statsEl = document.getElementById('adminStats');
+  statsEl.innerHTML = `
+    <div class="admin-stat glass"><b>${stats.total}</b><span>Total Leads</span></div>
+    <div class="admin-stat glass"><b>${stats.new}</b><span>New</span></div>
+    <div class="admin-stat glass"><b>${stats.contacted}</b><span>Contacted</span></div>
+    <div class="admin-stat glass"><b>${stats.policyIssued}</b><span>Policy Issued</span></div>`;
+  if(!ledger.length){
+    body.innerHTML = `<tr><td colspan="8"><div class="admin-empty">No leads captured yet across any vertical.</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = ledger.map(entry => `
+    <tr>
+      <td>${escapeHtml(new Date(entry.created_at).toLocaleString('en-IN'))}</td>
+      <td>${escapeHtml(entry.client_contact)} <span style="color:var(--muted-2)">(${escapeHtml(entry.client_channel)})</span></td>
+      <td>${escapeHtml(entry.vertical)}</td>
+      <td>${escapeHtml(entry.category)}</td>
+      <td>${escapeHtml(entry.plan_name)}${entry.plan_no ? ' (No. ' + escapeHtml(entry.plan_no) + ')' : ''}</td>
+      <td>₹${escapeHtml(entry.invest_amount)} · ${escapeHtml(entry.tenure_years)}y · ${escapeHtml(entry.frequency)}</td>
+      <td><span class="tag ${entry.action_type==='Request Quote' ? 'tag-quote' : 'tag-brochure'}">${escapeHtml(entry.action_type)}</span></td>
+      <td>
+        <select class="status-select" onchange="updateStatus('${entry.id}', this.value)">
+          <option ${entry.status==='New'?'selected':''}>New</option>
+          <option ${entry.status==='Contacted'?'selected':''}>Contacted</option>
+          <option ${entry.status==='Policy Issued'?'selected':''}>Policy Issued</option>
+        </select>
+      </td>
+    </tr>`).join('');
+}
+async function updateStatus(id, status){
+  try{
+    await updateLeadStatusApi(id, status);
+    toast('success', 'Status Updated', `Lead marked as "${status}".`);
+    renderAdmin();
+  }catch(err){
+    toast('error', 'Update Failed', err.message || 'Could not update this lead.');
+  }
+}
+function clearLedgerUI(){
+  showConfirm('Clear All Records', 'This will permanently delete every lead in the ledger from the database. This cannot be undone.', async ()=>{
+    try{
+      await clearAllLeadsApi();
+      renderAdmin();
+      toast('info', 'Ledger Cleared', 'All lead records have been removed.');
+    }catch(err){
+      toast('error', 'Could Not Clear Ledger', err.message || 'Please try again.');
+    }
+  });
+}
+async function exportLedger(){
+  try{
+    const blob = await exportLeadsCsvApi();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'lic_lead_ledger.csv'; a.click();
+    URL.revokeObjectURL(url);
+    toast('success', 'Export Ready', 'Ledger exported as CSV.');
+  }catch(err){
+    toast('error', 'Export Failed', err.message || 'Please try again.');
+  }
+}
+document.addEventListener('invalid', (e)=>{ e.preventDefault(); }, true);
+</script>
+</body>
+</html>

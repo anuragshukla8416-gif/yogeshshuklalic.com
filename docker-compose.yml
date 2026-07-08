@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: yogesh_advisory
+      POSTGRES_USER: yogesh
+      POSTGRES_PASSWORD: changeme_local_dev_only
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Auto-run on first container start — creates all tables from schema.sql
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yogesh -d yogesh_advisory"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      NODE_ENV: production
+      DATABASE_URL: postgres://yogesh:changeme_local_dev_only@db:5432/yogesh_advisory
+      PGSSL: "false"
+      JWT_SECRET: replace_this_with_a_long_random_string
+      SESSION_TOKEN_EXPIRY: 7d
+      ADMIN_PIN: "719900"
+      FRONTEND_ORIGIN: "http://localhost:5500"
+      ADVISOR_EMAIL: yogeshshuklalic@yahoo.com
+      # SMTP_HOST / MSG91_AUTH_KEY / SENDGRID_API_KEY intentionally left unset here —
+      # add them (or pass an env_file) to enable real OTP/notification delivery.
+
+volumes:
+  pgdata:

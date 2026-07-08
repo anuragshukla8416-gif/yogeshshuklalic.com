@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motor Insurance | Yogesh Shukla Advisory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-crest">YS</div>
+      <div><div class="brand-name">Yogesh Shukla</div><div class="brand-tag">MDRT Member · Motor Insurance Desk</div></div>
+    </div>
+    <div class="session-pill"><span id="sessionContact">—</span><span class="lo" onclick="logout()">Sign Out</span></div>
+  </div>
+  <div class="breadcrumb"><a href="index.html">← Back to Advisory Home</a> / Section IV / Motor Insurance</div>
+
+  <div class="section-heading">
+    <div class="eyebrow">Section IV</div>
+    <h2>Motor Insurance — Choose Your Vehicle Type</h2>
+    <p>Select your vehicle category, then tell us your cover plan. We'll match you to National Insurance products, sourced from <a href="https://nationalinsurance.nic.co.in/" target="_blank" rel="noopener" style="color:var(--gold-bright)">nationalinsurance.nic.co.in</a>.</p>
+  </div>
+
+  <div class="chip-grid" id="subtypeGrid"></div>
+
+  <div id="intakeSection" class="hidden">
+    <div class="intake-panel glass">
+      <div class="section-heading" style="margin-bottom:18px;">
+        <div class="eyebrow">Your Plan</div>
+        <h2 id="intakeTitle" style="font-size:22px;">Tell us your cover details</h2>
+      </div>
+      <div class="intake-grid">
+        <div>
+          <span class="field-label">Insured Declared Value / IDV (₹)</span>
+          <input class="lux-input" id="amountInput" type="number" min="0" placeholder="e.g. 600000">
+        </div>
+        <div>
+          <span class="field-label">Policy Term (Years)</span>
+          <input class="lux-input" id="tenureInput" type="number" min="1" max="5" placeholder="e.g. 1">
+        </div>
+        <div>
+          <span class="field-label">Premium Payment Frequency</span>
+          <div class="freq-toggle" id="freqToggle">
+            <button class="active" data-freq="Monthly" onclick="setFrequency('Monthly')">Monthly</button>
+            <button data-freq="Quarterly" onclick="setFrequency('Quarterly')">Quarterly</button>
+            <button data-freq="Yearly" onclick="setFrequency('Yearly')">Yearly</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="findPlans()">Show Matching Plans</button>
+    </div>
+  </div>
+
+  <div id="plansSection" class="hidden">
+    <div class="section-heading">
+      <div class="eyebrow" id="resultsEyebrow">Matching Plans</div>
+      <h2 id="resultsTitle">—</h2>
+    </div>
+    <div class="plans-grid" id="plansGrid"></div>
+  </div>
+
+  <div class="site-footer">
+    <div>© <span id="yearNow"></span> Yogesh Shukla Wealth Advisory</div>
+    <div>71 Atindra Mukherjee Lane, Shibpur, Howrah, West Bengal</div>
+  </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/common.js"></script>
+<script>
+document.getElementById('yearNow').textContent = new Date().getFullYear();
+requireSession();
+
+const BROCHURE_URL = "https://nationalinsurance.nic.co.in/";
+const CATEGORIES = {
+  car:        { label:"Private Car", sub:"Comprehensive &amp; Third-Party", icon:"🚗" },
+  twowheeler: { label:"Two Wheeler", sub:"Comprehensive &amp; Third-Party", icon:"🏍" },
+  commercial: { label:"Commercial Vehicle", sub:"Goods &amp; Passenger Carriers", icon:"🚚" },
+};
+const PLANS = [
+  { name:"Private Car Package Policy (Comprehensive)", cat:"car" },
+  { name:"Private Car Third-Party Liability Policy", cat:"car" },
+  { name:"Private Car Standalone Own-Damage Policy", cat:"car" },
+  { name:"Two Wheeler Package Policy (Comprehensive)", cat:"twowheeler" },
+  { name:"Two Wheeler Third-Party Liability Policy", cat:"twowheeler" },
+  { name:"Two Wheeler Standalone Own-Damage Policy", cat:"twowheeler" },
+  { name:"Commercial Vehicle Package Policy — Goods Carrying", cat:"commercial" },
+  { name:"Commercial Vehicle Package Policy — Passenger Carrying", cat:"commercial" },
+  { name:"Commercial Vehicle Third-Party Liability Policy", cat:"commercial" },
+];
+
+let activeCat = null;
+let frequency = 'Yearly';
+
+function renderChips(){
+  const grid = document.getElementById('subtypeGrid');
+  grid.innerHTML = '';
+  Object.entries(CATEGORIES).forEach(([key, c])=>{
+    const count = PLANS.filter(p=>p.cat===key).length;
+    const chip = document.createElement('div');
+    chip.className = 'chip glass';
+    chip.onclick = ()=> selectSubtype(key);
+    chip.innerHTML = `<span class="icon">${c.icon}</span><h4>${c.label}</h4><p>${c.sub} · ${count} plans</p>`;
+    grid.appendChild(chip);
+  });
+}
+function selectSubtype(key){
+  activeCat = key;
+  document.querySelectorAll('.chip').forEach((el,i)=> el.classList.toggle('active', Object.keys(CATEGORIES)[i]===key));
+  document.getElementById('intakeTitle').textContent = `Tell us your cover details — ${CATEGORIES[key].label}`;
+  document.getElementById('intakeSection').classList.remove('hidden');
+  document.getElementById('plansSection').classList.add('hidden');
+  document.getElementById('intakeSection').scrollIntoView({behavior:'smooth', block:'start'});
+  // Motor policies are usually annual; default frequency to Yearly for this vertical
+  setFrequency('Yearly');
+}
+function setFrequency(f){
+  frequency = f;
+  document.querySelectorAll('#freqToggle button').forEach(b=> b.classList.toggle('active', b.dataset.freq===f));
+}
+function findPlans(){
+  const amount = document.getElementById('amountInput').value;
+  const tenure = document.getElementById('tenureInput').value;
+  if(!amount || Number(amount) <= 0){ toast('error', 'IDV Required', 'Please enter the insured declared value (IDV) of your vehicle.'); return; }
+  if(!tenure || Number(tenure) <= 0){ toast('error', 'Tenure Required', 'Please enter the policy term in years.'); return; }
+  renderPlans(activeCat, amount, tenure, frequency);
+}
+function renderPlans(cat, amount, tenure, freq){
+  const list = PLANS.filter(p=>p.cat===cat);
+  document.getElementById('resultsEyebrow').textContent = CATEGORIES[cat].label + ' — Matching Plans';
+  document.getElementById('resultsTitle').textContent = `${list.length} plans for ₹${Number(amount).toLocaleString('en-IN')} IDV over ${tenure} year(s)`;
+  const grid = document.getElementById('plansGrid');
+  grid.innerHTML = '';
+  document.getElementById('plansSection').classList.remove('hidden');
+  list.forEach((p,i)=>{
+    const card = document.createElement('div');
+    card.className = 'plan-card glass';
+    card.style.animationDelay = (i*0.05)+'s';
+    card.innerHTML = `
+      <h4>${p.name}</h4>
+      <div class="plan-cat">${CATEGORIES[cat].label}</div>
+      <div class="plan-inputs-echo">₹${Number(amount).toLocaleString('en-IN')} · ${tenure} yr(s) · ${freq}</div>
+      <div class="plan-actions">
+        <button class="btn btn-primary" onclick='requestQuote(${JSON.stringify(p.name)}, ${JSON.stringify(CATEGORIES[cat].label)}, ${JSON.stringify(amount)}, ${JSON.stringify(tenure)}, ${JSON.stringify(freq)})'>Request Quote</button>
+        <a class="brochure-link" href="${BROCHURE_URL}" target="_blank" rel="noopener" onclick='trackBrochure(${JSON.stringify(p.name)}, ${JSON.stringify(CATEGORIES[cat].label)}, ${JSON.stringify(amount)}, ${JSON.stringify(tenure)}, ${JSON.stringify(freq)})'>Official Brochure ↗</a>
+      </div>`;
+    grid.appendChild(card);
+  });
+  document.getElementById('plansSection').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function baseDetails(name, cat, amount, tenure, freq){
+  return { vertical:'Motor Insurance', category:cat, planNo:'—', planName:name, investAmount:amount, tenure, frequency:freq };
+}
+function requestQuote(name, cat, amount, tenure, freq){ openQuoteModal(baseDetails(name,cat,amount,tenure,freq)); }
+function trackBrochure(name, cat, amount, tenure, freq){ logBrochureClick(baseDetails(name,cat,amount,tenure,freq)); }
+
+renderChips();
+</script>
+</body>
+</html>
